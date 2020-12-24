@@ -1,32 +1,33 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
+import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @Service
 public class UserService {
+    private HashService hashService;
+    private UserMapper userMapper;
 
-    private Map<String, User> accounts;
+    public UserService(HashService hashService, UserMapper userMapper) {
+        this.hashService = hashService;
+        this.userMapper = userMapper;
+    }
 
     public int createUser(User newUser) {
-        if (!accounts.containsKey(newUser.getUsername())) {
-            accounts.put(newUser.getUsername(), newUser);
-            return accounts.size();
-        }
-        return -1;
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        String encodedSalt = Base64.getEncoder().encodeToString(salt);
+        String hashedPassword = hashService.getHashedValue(newUser.getPassword(), encodedSalt);
+        return userMapper.insert(new User(null, newUser.getUsername(), encodedSalt, hashedPassword, newUser.getFirstName(), newUser.getLastName()));
     }
 
     public User getUser(String username) {
-        return accounts.get(username);
+        return userMapper.getUser(username);
     }
 
-    @PostConstruct
-    private void init() {
-        accounts = new HashMap<>();
-    }
 }

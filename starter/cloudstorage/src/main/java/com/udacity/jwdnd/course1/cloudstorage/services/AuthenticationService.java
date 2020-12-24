@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
+import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,18 +13,29 @@ import java.util.ArrayList;
 @Service
 public class AuthenticationService implements AuthenticationProvider {
 
-    private UserService userService;
+    private HashService hashService;
+    private UserMapper userMapper;
 
-    public AuthenticationService(UserService userService) {
-        this.userService = userService;
+    public AuthenticationService(HashService hashService, UserMapper userMapper) {
+        this.hashService = hashService;
+        this.userMapper = userMapper;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        User user = userService.getUser(authentication.getPrincipal().toString());
-        if(user != null && user.getPassword().equals(authentication.getCredentials().toString())) {
-            return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), new ArrayList<>());
+        String username = authentication.getName();
+        String password = authentication.getCredentials().toString();
+
+        User user = userMapper.getUser(username);
+        if (user != null) {
+            String encodedSalt = user.getSalt();
+            String hashedPassword = hashService.getHashedValue(password, encodedSalt);
+            if (user.getPassword().equals(hashedPassword)) {
+                return new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>());
+            }
         } else throw new MyAuthenticationException("Invalid login id or password");
+
+        return null;
     }
 
     @Override

@@ -25,9 +25,10 @@ public class SignupController {
 
     @PostMapping ("/signup")
     public String processSignup(@ModelAttribute("user") User newUser, Model model) {
-        if (userService.createUser(newUser) == -1) {
+        if (!userService.isUsernameAvailable(newUser.getUsername())) {
             model.addAttribute("signupErrorMessage", "Account already exists");
         } else {
+            userService.createUser(newUser);
             model.addAttribute("signupSuccessful", "true");
         }
         return "signup";

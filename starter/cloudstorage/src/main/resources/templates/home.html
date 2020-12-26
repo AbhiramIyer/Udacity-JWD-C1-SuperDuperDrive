@@ -75,13 +75,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr th:if="${#lists.isEmpty(notes)}">
                                         <td>
-                                            <button type="button" class="btn btn-success">Edit</button>
-                                            <a class="btn btn-danger">Delete</a>
+                                            <button type="button" class="btn btn-success" onclick="showNoteModal(null, 'Example Note Title', 'Example Note Description')">Edit</button>
+                                            <a href="#" class="btn btn-danger">Delete</a>
                                         </td>
                                         <th scope="row">Example Note Title</th>
                                         <td>Example Note Description </td>
+                                    </tr>
+                                    <tr th:each="note: ${notes}">
+                                        <td>
+                                            <button type="button" class="btn btn-success"
+                                                    th:data-noteId="${note.noteId}"
+                                                    th:data-noteTitle="${note.noteTitle}"
+                                                    th:data-noteDescription="${note.noteDescription}"
+                                                    th:onclick="showNoteModal(this.getAttribute('data-noteId'), this.getAttribute('data-noteTitle'), this.getAttribute('data-noteDescription'))">
+                                                Edit
+                                            </button>
+                                            <a class="btn btn-danger" th:href="@{'/notes/delete/' + ${note.noteId}}">Delete</a>
+                                        </td>
+                                        <th th:text="${note.noteTitle}" scope="row"></th>
+                                        <td th:text="${note.noteDescription}"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -97,15 +111,15 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
-                                            <input type="hidden" name="noteId" id="note-id">
+                                        <form th:object="${note}" th:action="@{/notes}" action="#" method="POST">
+                                            <input th:field="*{noteId}" type="hidden" name="noteId" id="note-id">
                                             <div class="form-group">
                                                 <label for="note-title" class="col-form-label">Title</label>
-                                                <input type="text" name= "noteTitle" class="form-control" id="note-title" maxlength="20" required>
+                                                <input th:field="*{noteTitle}" type="text" name= "noteTitle" class="form-control" id="note-title" maxlength="20" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="note-description" class="col-form-label">Description</label>
-                                                <textarea class="form-control" name="noteDescription" id="note-description" rows="5" maxlength="1000" required></textarea>
+                                                <textarea th:field="*{noteDescription}" class="form-control" name="noteDescription" id="note-description" rows="5" maxlength="1000" required></textarea>
                                             </div>
                                             <button id="noteSubmit" type="submit" class="d-none"></button>
                                         </form>

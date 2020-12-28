@@ -9,28 +9,29 @@ import java.util.List;
 
 @Service
 public class NotesService {
-    private NoteMapper noteMapper;
+    private NoteMapper mapper;
     private UserService userService;
 
-    public NotesService(NoteMapper noteMapper, UserService userService) {
-        this.noteMapper = noteMapper;
+    public NotesService(NoteMapper mapper, UserService userService) {
+        this.mapper = mapper;
         this.userService = userService;
     }
 
-    public List<Note> getNotesForUser(String username) {
+    public List<Note> getAllNotesByUser(String username) {
         User user = userService.getUser(username);
-        return noteMapper.getUserNotes(user.getUserId());
+        return mapper.getAllNotesByUserId(user.getUserId());
     }
 
-    public int addNewNote(Note newNote) {
-        return noteMapper.insertNote(new Note(null, newNote.getNoteTitle(), newNote.getNoteDescription(), newNote.getOwnerUserId()));
+    public int addNewNote(Note note) {
+        Note newNote = new Note(null, note.getNoteTitle(), note.getNoteDescription(), note.getOwnerUserId());
+        return mapper.insertNote(newNote);
     }
 
     public void updateNote(Note note) {
-        noteMapper.updateNote(note);
+        mapper.updateNote(note);
     }
 
-    public void deleteNote(Integer noteId) {
-        noteMapper.deleteNote(noteId);
+    public void deleteNoteById(Integer noteId) {
+        mapper.deleteNote(noteId);
     }
 }

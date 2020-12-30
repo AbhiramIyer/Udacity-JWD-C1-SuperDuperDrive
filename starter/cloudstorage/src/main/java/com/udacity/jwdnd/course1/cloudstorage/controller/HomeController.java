@@ -56,7 +56,7 @@ public class HomeController {
     @PostMapping("/notes")
     public String addOrUpdateNote(@ModelAttribute("note") Note note, Model model) {
         if (note.getNoteId() == null) {
-            note.setOwnerUserId(userService.getUser(getCurrentUserName()).getUserId());
+            note.setUserId(userService.getUser(getCurrentUserName()).getUserId());
             notesService.addNewNote(note);
         } else {
             notesService.updateNote(note);
@@ -76,7 +76,7 @@ public class HomeController {
     @PostMapping("/credentials")
     public String addOrUpdateCredential(@ModelAttribute("credential")Credential credential, Model model) {
         if (credential.getCredentialId() == null) {
-            credential.setOwnerUserId(userService.getUser(getCurrentUserName()).getUserId());
+            credential.setUserId(userService.getUser(getCurrentUserName()).getUserId());
             credentialsService.addNewCredential(credential);
         } else {
             credentialsService.updateCredential(credential);
@@ -122,8 +122,7 @@ public class HomeController {
     private String getCurrentUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String currentUserName = authentication.getName();
-            return currentUserName;
+            return authentication.getName();
         }
         return null;
     }

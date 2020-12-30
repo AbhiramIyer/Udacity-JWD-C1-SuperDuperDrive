@@ -27,11 +27,11 @@ public class FileStorageService {
         return mapper.insertFile(newFile);
     }
 
-    public void deleteFileById(Integer fileId) {
+    public void deleteFileById(int fileId) {
         mapper.deleteFileById(fileId);
     }
 
-    public File getFileById(Integer fileId) {
+    public File getFileById(int fileId) {
         return mapper.getFileByFileId(fileId);
     }
 }

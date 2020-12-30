@@ -23,7 +23,7 @@ public class NotesService {
     }
 
     public int addNewNote(Note note) {
-        Note newNote = new Note(null, note.getNoteTitle(), note.getNoteDescription(), note.getOwnerUserId());
+        Note newNote = new Note(null, note.getNoteTitle(), note.getNoteDescription(), note.getUserId());
         return mapper.insertNote(newNote);
     }
 
@@ -31,7 +31,7 @@ public class NotesService {
         mapper.updateNote(note);
     }
 
-    public void deleteNoteById(Integer noteId) {
-        mapper.deleteNote(noteId);
+    public void deleteNoteById(int noteId) {
+        mapper.deleteNoteById(noteId);
     }
 }

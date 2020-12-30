@@ -14,5 +14,5 @@ public class Credential {
     private String key;
     private String clearPassword;
     private String encryptedPassword;
-    private Integer ownerUserId;
+    private Integer userId;
 }

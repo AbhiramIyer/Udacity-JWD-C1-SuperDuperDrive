@@ -24,14 +24,14 @@ public class CredentialsService {
     public List<Credential> getAllCredentialsByUser(String username) {
         User user = userService.getUser(username);
         List<Credential> credentials = mapper.getAllCredentialsByUserId(user.getUserId());
-        credentials.stream().forEach(c -> c.setClearPassword(decryptPassword(c.getEncryptedPassword(), c.getKey())));
+        credentials.forEach(c -> c.setClearPassword(decryptPassword(c.getEncryptedPassword(), c.getKey())));
         return credentials;
     }
 
     public int addNewCredential(Credential credential) {
         String key = generateKey();
         String encryptedPassword = encryptPassword(credential.getClearPassword(), key);
-        Credential newCredential = new Credential(null, credential.getUrl(), credential.getUsername(), key, "", encryptedPassword, credential.getOwnerUserId());
+        Credential newCredential = new Credential(null, credential.getUrl(), credential.getUsername(), key, "", encryptedPassword, credential.getUserId());
         return mapper.insertCredential(newCredential);
     }
 
@@ -51,11 +51,11 @@ public class CredentialsService {
         mapper.updateCredential(credential);
     }
 
-    public void deleteCredentialById(Integer credentialId) {
+    public void deleteCredentialById(int credentialId) {
         mapper.deleteCredential(credentialId);
     }
 
-    public Credential getDecryptedCredentialById(Integer credentialId) {
+    public Credential getDecryptedCredentialById(int credentialId) {
         Credential credential = mapper.getCredentialById(credentialId);
         String decryptedPassword = decryptPassword(credential.getEncryptedPassword(), credential.getKey());
         credential.setClearPassword(decryptedPassword);

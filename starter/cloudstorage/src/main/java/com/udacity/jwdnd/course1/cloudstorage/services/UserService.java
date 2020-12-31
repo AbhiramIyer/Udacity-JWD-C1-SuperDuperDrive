@@ -3,11 +3,18 @@ package com.udacity.jwdnd.course1.cloudstorage.services;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 
 @Service
+//
+// Using @Transactional to serialize the user account creation because there is no uniqueness constraint on the USERS
+// table for username. Otherwise multiple user accounts can be created with same username(as discovered during testing).
+//
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class UserService {
     private HashService hashService;
     private UserMapper userMapper;

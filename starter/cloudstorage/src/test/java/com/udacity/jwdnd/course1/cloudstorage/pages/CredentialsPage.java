@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class CredentialsTab {
+public class CredentialsPage {
     private WebDriver webDriver;
 
     @FindBy(id = "addNewCredentialButton")
@@ -24,7 +24,7 @@ public class CredentialsTab {
     @FindBy(id = "credentialSubmitButton")
     WebElement credentialSubmitButton;
 
-    public CredentialsTab(WebDriver webDriver) {
+    public CredentialsPage(WebDriver webDriver) {
         this.webDriver = webDriver;
         PageFactory.initElements(this.webDriver, this);
     }

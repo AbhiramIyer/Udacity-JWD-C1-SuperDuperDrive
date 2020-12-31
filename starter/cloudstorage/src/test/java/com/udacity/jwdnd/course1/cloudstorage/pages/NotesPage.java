@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class NotesTab {
+public class NotesPage {
     private WebDriver webDriver;
 
     @FindBy(id = "addNewNoteButton")
@@ -21,7 +21,7 @@ public class NotesTab {
     @FindBy(id = "noteSubmitButton")
     WebElement noteSubmitButton;
 
-    public NotesTab(WebDriver webDriver) {
+    public NotesPage(WebDriver webDriver) {
         this.webDriver = webDriver;
         PageFactory.initElements(this.webDriver, this);
     }

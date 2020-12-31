@@ -112,10 +112,10 @@ class CloudStorageApplicationTests {
 		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
 		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
-		NotesTab nt = new NotesTab(driver);
+		NotesPage np = new NotesPage(driver);
 		String testNoteTitle = "Testing Testing";
 		String testNoteDescription = "Test all the things";
-		nt.addNewNote( testNoteTitle, testNoteDescription);
+		np.addNewNote( testNoteTitle, testNoteDescription);
 
 		noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
@@ -135,15 +135,15 @@ class CloudStorageApplicationTests {
 
 		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
-		NotesTab nt = new NotesTab(driver);
-		nt.addNewNote("Original Title", "Original Content");
+		NotesPage np = new NotesPage(driver);
+		np.addNewNote("Original Title", "Original Content");
 
 		noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
-		nt = new NotesTab(driver);
+		np = new NotesPage(driver);
 		String updated_title = "Updated Title";
 		String updated_content = "Updated Content";
-		nt.editNote("//*[@id=\"userTable\"]/tbody/tr/td[1]/button", updated_title, updated_content);
+		np.editNote("//*[@id=\"userTable\"]/tbody/tr/td[1]/button", updated_title, updated_content);
 
 		noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
@@ -163,13 +163,13 @@ class CloudStorageApplicationTests {
 
 		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
-		NotesTab nt = new NotesTab(driver);
-		nt.addNewNote("Original Title", "Original Content");
+		NotesPage np = new NotesPage(driver);
+		np.addNewNote("Original Title", "Original Content");
 
 		noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
-		nt = new NotesTab(driver);
-		nt.deleteNote("//*[@id=\"userTable\"]/tbody/tr/td[1]/a");
+		np = new NotesPage(driver);
+		np.deleteNote("//*[@id=\"userTable\"]/tbody/tr/td[1]/a");
 
 		noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
@@ -189,11 +189,11 @@ class CloudStorageApplicationTests {
 		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
 		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
-		CredentialsTab ct = new CredentialsTab(driver);
+		CredentialsPage cp = new CredentialsPage(driver);
 		String testUrl = "Testing.com";
 		String testUsername = "breaker1";
 		String testPassword = "break123";
-		ct.addNewCredential( testUrl, testUsername, testPassword);
+		cp.addNewCredential( testUrl, testUsername, testPassword);
 
 		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
@@ -214,19 +214,19 @@ class CloudStorageApplicationTests {
 		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
 		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
-		CredentialsTab ct = new CredentialsTab(driver);
+		CredentialsPage cp = new CredentialsPage(driver);
 		String testUrl = "Testing.com";
 		String testUsername = "breaker1";
 		String testPassword = "break123";
-		ct.addNewCredential( testUrl, testUsername, testPassword);
+		cp.addNewCredential( testUrl, testUsername, testPassword);
 
 		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
-		ct = new CredentialsTab(driver);
+		cp = new CredentialsPage(driver);
 		String updatedUrl = "Testing2.com";
 		String updatedUsername = "breaker2";
 		String updatedPassword = "break12345";
-		ct.editCredential("//*[@id=\"credentialTable\"]/tbody/tr/td[1]/button", updatedUrl, updatedUsername, updatedPassword);
+		cp.editCredential("//*[@id=\"credentialTable\"]/tbody/tr/td[1]/button", updatedUrl, updatedUsername, updatedPassword);
 
 		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
@@ -247,15 +247,15 @@ class CloudStorageApplicationTests {
 		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
 		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
-		CredentialsTab ct = new CredentialsTab(driver);
+		CredentialsPage cp = new CredentialsPage(driver);
 		String testUrl = "Testing.com";
 		String testUsername = "breaker1";
 		String testPassword = "break123";
-		ct.addNewCredential( testUrl, testUsername, testPassword);
+		cp.addNewCredential( testUrl, testUsername, testPassword);
 
 		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();
-		ct.deleteCredential("//*[@id=\"credentialTable\"]/tbody/tr/td[1]/a");
+		cp.deleteCredential("//*[@id=\"credentialTable\"]/tbody/tr/td[1]/a");
 
 		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialTab.click();

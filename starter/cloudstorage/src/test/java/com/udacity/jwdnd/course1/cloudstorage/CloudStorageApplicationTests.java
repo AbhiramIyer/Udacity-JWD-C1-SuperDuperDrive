@@ -1,9 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
-import com.udacity.jwdnd.course1.cloudstorage.pages.HomePage;
-import com.udacity.jwdnd.course1.cloudstorage.pages.LoginPage;
-import com.udacity.jwdnd.course1.cloudstorage.pages.NotesTab;
-import com.udacity.jwdnd.course1.cloudstorage.pages.SignupPage;
+import com.udacity.jwdnd.course1.cloudstorage.pages.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -182,6 +179,93 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Example Note Title", noteTitle.getText());
 		Assertions.assertEquals("Example Note Description", noteDescription.getText());
 
+	}
+
+	@Test
+	public void loggedInUserCanAddACredentialAndVerifyIt() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		dologin("johndoe", "badpassword");
+
+		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
+		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+		CredentialsTab ct = new CredentialsTab(driver);
+		String testUrl = "Testing.com";
+		String testUsername = "breaker1";
+		String testPassword = "break123";
+		ct.addNewCredential( testUrl, testUsername, testPassword);
+
+		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+
+		WebElement resultUrl = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/th"));
+		WebElement resultUsername = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/td[2]"));
+		WebElement resultEncryptedPassword = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/td[3]"));
+		Assertions.assertEquals(testUrl, resultUrl.getText());
+		Assertions.assertEquals(testUsername, resultUsername.getText());
+		Assertions.assertNotEquals(testPassword, resultEncryptedPassword.getText());
+	}
+
+	@Test
+	public void loggedInUserCanEditACredentialAndVerifyIt() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		dologin("johndoe", "badpassword");
+
+		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
+		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+		CredentialsTab ct = new CredentialsTab(driver);
+		String testUrl = "Testing.com";
+		String testUsername = "breaker1";
+		String testPassword = "break123";
+		ct.addNewCredential( testUrl, testUsername, testPassword);
+
+		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+		ct = new CredentialsTab(driver);
+		String updatedUrl = "Testing2.com";
+		String updatedUsername = "breaker2";
+		String updatedPassword = "break12345";
+		ct.editCredential("//*[@id=\"credentialTable\"]/tbody/tr/td[1]/button", updatedUrl, updatedUsername, updatedPassword);
+
+		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+
+		WebElement resultUrl = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/th"));
+		WebElement resultUsername = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/td[2]"));
+		WebElement resultEncryptedPassword = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/td[3]"));
+		Assertions.assertEquals(updatedUrl, resultUrl.getText());
+		Assertions.assertEquals(updatedUsername, resultUsername.getText());
+		Assertions.assertNotEquals(updatedPassword, resultEncryptedPassword.getText());
+	}
+
+	@Test
+	public void loggedInUserCanDeleteACredentialAndVerifyIt() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		dologin("johndoe", "badpassword");
+
+		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
+		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+		CredentialsTab ct = new CredentialsTab(driver);
+		String testUrl = "Testing.com";
+		String testUsername = "breaker1";
+		String testPassword = "break123";
+		ct.addNewCredential( testUrl, testUsername, testPassword);
+
+		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+		ct.deleteCredential("//*[@id=\"credentialTable\"]/tbody/tr/td[1]/a");
+
+		credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+
+		WebElement resultUrl = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/th"));
+		WebElement resultUsername = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/td[2]"));
+		WebElement resultEncryptedPassword = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr/td[3]"));
+		Assertions.assertEquals("Example Credential URL", resultUrl.getText());
+		Assertions.assertEquals("Example Credential Username", resultUsername.getText());
+		Assertions.assertEquals("Example Credential Password", resultEncryptedPassword.getText());
 	}
 
 	private SignupPage doSignup(String firstName, String lastName, String username, String password) {

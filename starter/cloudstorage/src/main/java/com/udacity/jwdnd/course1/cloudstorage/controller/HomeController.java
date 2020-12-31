@@ -37,7 +37,7 @@ public class HomeController {
         this.fileStorageService = fileStorageService;
     }
 
-    @RequestMapping("/home")
+    @RequestMapping({"/","/home"})
     public String getHomePage(Model model) {
         String currentUserName = getCurrentUserName();
         List<Note> notes = notesService.getAllNotesByUser(currentUserName);

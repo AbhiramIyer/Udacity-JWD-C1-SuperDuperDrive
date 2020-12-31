@@ -16,6 +16,10 @@
                 </form>
             </div>
             <div id="contentDiv" style="clear: right;">
+                <div class="alert alert-info alert-dismissible" th:if="${flashMessage}">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <h6 th:text="${flashMessage}">Flash Messages Go Here</h6>
+                </div>
                 <nav style="clear: right;">
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-files-tab" data-toggle="tab" href="#nav-files" role="tab" aria-controls="nav-files" aria-selected="true">Files</a>

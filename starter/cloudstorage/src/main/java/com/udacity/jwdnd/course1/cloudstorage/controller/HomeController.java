@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,13 +55,17 @@ public class HomeController {
     }
 
     @PostMapping("/notes")
-    public String addOrUpdateNote(@ModelAttribute("note") Note note, Model model) {
+    public String addOrUpdateNote(@ModelAttribute("note") Note note, Model model, RedirectAttributes redirectAttributes) {
+        String flashMessage;
         if (note.getNoteId() == null) {
             note.setUserId(userService.getUser(getCurrentUserName()).getUserId());
             notesService.addNewNote(note);
+            flashMessage = "Note created successfully!";
         } else {
             notesService.updateNote(note);
+            flashMessage = "Note saved successfully!";
         }
+        redirectAttributes.addFlashAttribute("flashMessage", flashMessage);
         return "redirect:/home";
     }
 
@@ -68,30 +73,36 @@ public class HomeController {
     *  Need to modify the Delete button in home.html from link to form
     * */
     @GetMapping("/notes/delete/{id}")
-    public String deleteNote(@PathVariable Integer id) {
+    public String deleteNote(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         notesService.deleteNoteById(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "Note deleted successfully!");
         return "redirect:/home";
     }
 
     @PostMapping("/credentials")
-    public String addOrUpdateCredential(@ModelAttribute("credential")Credential credential, Model model) {
+    public String addOrUpdateCredential(@ModelAttribute("credential")Credential credential, Model model, RedirectAttributes redirectAttributes) {
+        String flashMessage;
         if (credential.getCredentialId() == null) {
             credential.setUserId(userService.getUser(getCurrentUserName()).getUserId());
             credentialsService.addNewCredential(credential);
+            flashMessage = "Credential created successfully!";
         } else {
             credentialsService.updateCredential(credential);
+            flashMessage = "Credential updated successfully!";
         }
+        redirectAttributes.addFlashAttribute("flashMessage", flashMessage);
         return "redirect:/home";
     }
 
     @GetMapping("/credentials/delete/{id}")
-    public String deleteCredential(@PathVariable Integer id) {
+    public String deleteCredential(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         credentialsService.deleteCredentialById(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "Credential deleted successfully!");
         return "redirect:/home";
     }
 
     @PostMapping("/file-upload")
-    public String uploadFile(@RequestParam("fileUpload") MultipartFile fileUpload, Model model) throws IOException {
+    public String uploadFile(@RequestParam("fileUpload") MultipartFile fileUpload, Model model, RedirectAttributes redirectAttributes) throws IOException {
         File newFile = new File();
         newFile.setFileName(fileUpload.getOriginalFilename());
         newFile.setContentType(fileUpload.getContentType());
@@ -99,13 +110,15 @@ public class HomeController {
         newFile.setUserId(userService.getUser(getCurrentUserName()).getUserId());
         newFile.setFileData(fileUpload.getBytes());
         fileStorageService.uploadNewFile(newFile);
+        redirectAttributes.addFlashAttribute("flashMessage", "File uploaded successfully!");
 
         return "redirect:/home";
     }
 
     @GetMapping("/files/delete/{id}")
-    public String deleteFile(@PathVariable Integer id) {
+    public String deleteFile(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         fileStorageService.deleteFileById(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "File deleted successfully!");
         return "redirect:/home";
     }
 

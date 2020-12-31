@@ -2,6 +2,7 @@ package com.udacity.jwdnd.course1.cloudstorage;
 
 import com.udacity.jwdnd.course1.cloudstorage.pages.HomePage;
 import com.udacity.jwdnd.course1.cloudstorage.pages.LoginPage;
+import com.udacity.jwdnd.course1.cloudstorage.pages.NotesTab;
 import com.udacity.jwdnd.course1.cloudstorage.pages.SignupPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
@@ -10,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,13 +37,13 @@ class CloudStorageApplicationTests {
 
 	@BeforeAll
 	static void beforeAll() {
-		WebDriverManager.chromedriver().setup();
+		WebDriverManager.firefoxdriver().setup();
 	}
 
 	@BeforeEach
 	public void beforeEach() {
-		this.driver = new ChromeDriver();
-		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+		this.driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
 
 	@AfterEach
@@ -104,6 +105,83 @@ class CloudStorageApplicationTests {
 	public void unregisteredUserIsAlwaysRedirectedFromOtherPathsToLogin(String path) {
 		driver.get(HTTP_LOCALHOST + ":" + this.port + path);
 		Assertions.assertEquals("Login", driver.getTitle());
+	}
+
+	@Test
+	public void loggedInUserCanAddANoteAndVerifyIt() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		dologin("johndoe", "badpassword");
+
+		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
+		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+		NotesTab nt = new NotesTab(driver);
+		String testNoteTitle = "Testing Testing";
+		String testNoteDescription = "Test all the things";
+		nt.addNewNote( testNoteTitle, testNoteDescription);
+
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+
+		WebElement noteTitle = driver.findElement(By.xpath("//*[@id=\"userTable\"]/tbody/tr/th"));
+		WebElement noteDescription = driver.findElement(By.xpath("//*[@id=\"userTable\"]/tbody/tr/td[2]"));
+		Assertions.assertEquals( testNoteTitle, noteTitle.getText());
+		Assertions.assertEquals(testNoteDescription, noteDescription.getText());
+	}
+
+	@Test
+	public void loggedInUserCanEditAnExistingNoteAndVerifyIt() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		dologin("johndoe", "badpassword");
+
+		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
+
+		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+		NotesTab nt = new NotesTab(driver);
+		nt.addNewNote("Original Title", "Original Content");
+
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+		nt = new NotesTab(driver);
+		String updated_title = "Updated Title";
+		String updated_content = "Updated Content";
+		nt.editNote("//*[@id=\"userTable\"]/tbody/tr/td[1]/button", updated_title, updated_content);
+
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+
+		WebElement noteTitle = driver.findElement(By.xpath("//*[@id=\"userTable\"]/tbody/tr/th"));
+		WebElement noteDescription = driver.findElement(By.xpath("//*[@id=\"userTable\"]/tbody/tr/td[2]"));
+		Assertions.assertEquals(updated_title, noteTitle.getText());
+		Assertions.assertEquals(updated_content, noteDescription.getText());
+	}
+
+	@Test
+	public void loggedInUserCanDeleteANoteAndVerifyIt() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		dologin("johndoe", "badpassword");
+
+		driver.get(HTTP_LOCALHOST + ":" + this.port + "/home");
+
+		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+		NotesTab nt = new NotesTab(driver);
+		nt.addNewNote("Original Title", "Original Content");
+
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+		nt = new NotesTab(driver);
+		nt.deleteNote("//*[@id=\"userTable\"]/tbody/tr/td[1]/a");
+
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+
+		WebElement noteTitle = driver.findElement(By.xpath("//*[@id=\"userTable\"]/tbody/tr/th"));
+		WebElement noteDescription = driver.findElement(By.xpath("//*[@id=\"userTable\"]/tbody/tr/td[2]"));
+		Assertions.assertEquals("Example Note Title", noteTitle.getText());
+		Assertions.assertEquals("Example Note Description", noteDescription.getText());
+
 	}
 
 	private SignupPage doSignup(String firstName, String lastName, String username, String password) {

@@ -63,11 +63,16 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
+	public void newUserIsRedirectedToLoginAfterSuccessfulSignup() {
+		doSignup("John", "Doe", "johndoe", "badpassword");
+		WebElement flashMessageDiv = new WebDriverWait(driver, 5).until(driver -> driver.findElement(By.id("flashMessageDiv")));
+		Assertions.assertTrue(flashMessageDiv.isDisplayed());
+		Assertions.assertEquals("Login", driver.getTitle());
+	}
+
+	@Test
 	public void newUserCanSignUpAndSeeHomePageOnSuccessfulLoginAndCannotAccessHomeAfterLogout() {
 		doSignup("John", "Doe", "johndoe", "badpassword");
-		WebElement signupSuccessfulDiv = new WebDriverWait(driver, 5).until(driver -> driver.findElement(By.id("signupSuccessfulDiv")));
-		Assertions.assertTrue(signupSuccessfulDiv.isDisplayed());
-
 		dologin("johndoe", "badpassword");
 
 		HomePage hp = new HomePage(driver);
@@ -88,8 +93,6 @@ class CloudStorageApplicationTests {
 	public void userCannotSignupIfUsernameIsAlreadyTaken() {
 		// Claim a user id
 		doSignup("John", "Doe", "johndoe", "badpassword");
-		WebElement signupSuccessfulDiv = new WebDriverWait(driver, 5).until(driver -> driver.findElement(By.id("signupSuccessfulDiv")));
-		Assertions.assertTrue(signupSuccessfulDiv.isDisplayed());
 
 		// Try to signup again with same user name
 		doSignup("John", "Another Doe", "johndoe", "somepassword");

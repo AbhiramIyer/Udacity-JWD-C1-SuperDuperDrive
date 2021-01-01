@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -103,15 +104,24 @@ public class HomeController {
 
     @PostMapping("/file-upload")
     public String uploadFile(@RequestParam("fileUpload") MultipartFile fileUpload, Model model, RedirectAttributes redirectAttributes) throws IOException {
-        File newFile = new File();
-        newFile.setFileName(fileUpload.getOriginalFilename());
-        newFile.setContentType(fileUpload.getContentType());
-        newFile.setFileSize(Long.toString(fileUpload.getSize()));
-        newFile.setUserId(userService.getUser(getCurrentUserName()).getUserId());
-        newFile.setFileData(fileUpload.getBytes());
-        fileStorageService.uploadNewFile(newFile);
-        redirectAttributes.addFlashAttribute("flashMessage", "File uploaded successfully!");
+        String fileName = fileUpload.getOriginalFilename();
+        String flashMessage;
+        if (StringUtils.isEmpty(fileName)) {
+            flashMessage = "Select a file to upload by clicking the choose button";
+        }else if(fileStorageService.fileAlreadyExists(fileName)) {
+            flashMessage = "File already exists!";
+        } else {
+            File newFile = new File();
+            newFile.setFileName(fileUpload.getOriginalFilename());
+            newFile.setContentType(fileUpload.getContentType());
+            newFile.setFileSize(Long.toString(fileUpload.getSize()));
+            newFile.setUserId(userService.getUser(getCurrentUserName()).getUserId());
+            newFile.setFileData(fileUpload.getBytes());
+            fileStorageService.uploadNewFile(newFile);
+            flashMessage = "File uploaded successfully!";
+        }
 
+        redirectAttributes.addFlashAttribute("flashMessage", flashMessage);
         return "redirect:/home";
     }
 

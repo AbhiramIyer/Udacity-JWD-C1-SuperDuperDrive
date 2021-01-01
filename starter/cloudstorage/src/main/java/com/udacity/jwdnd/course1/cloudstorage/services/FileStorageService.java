@@ -34,4 +34,9 @@ public class FileStorageService {
     public File getFileById(int fileId) {
         return mapper.getFileByFileId(fileId);
     }
+
+    public boolean fileAlreadyExists(String fileName) {
+        File newFile = mapper.getFileByFileName(fileName);
+        return (newFile != null);
+    }
 }
